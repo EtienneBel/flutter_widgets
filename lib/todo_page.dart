@@ -8,6 +8,9 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
+  final _controller = TextEditingController();
+  TodoPriority priority = TodoPriority.Normal;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +35,71 @@ class _TodoPageState extends State<TodoPage> {
               }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          addTodo();
+        },
         backgroundColor: const Color(0xFF1690F8),
         foregroundColor: const Color(0xFFFFFFFF),
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void addTodo() {
+    showModalBottomSheet(
+      context: context,
+      // isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                hintText: 'What do you want to do ?',
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 25),
+              child: Text('Select Priority'),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Radio<TodoPriority>(
+                  value: TodoPriority.Low,
+                  groupValue: priority,
+                  onChanged: (value) {
+                    setState(() {
+                      priority = value!;
+                    });
+                  },
+                ),
+                Text(TodoPriority.Low.name),
+                Radio<TodoPriority>(
+                  value: TodoPriority.Normal,
+                  groupValue: priority,
+                  onChanged: (value) {
+                    setState(() {
+                      priority = value!;
+                    });
+                  },
+                ),
+                Text(TodoPriority.Normal.name),
+                Radio<TodoPriority>(
+                  value: TodoPriority.High,
+                  groupValue: priority,
+                  onChanged: (value) {
+                    setState(() {
+                      priority = value!;
+                    });
+                  },
+                ),
+                Text(TodoPriority.High.name),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -76,4 +140,4 @@ class MyTodo {
   static List<MyTodo> todos = [];
 }
 
-enum TodoPriority { low, medium, high }
+enum TodoPriority { Low, Normal, High }
