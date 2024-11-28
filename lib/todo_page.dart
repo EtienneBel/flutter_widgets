@@ -49,60 +49,98 @@ class _TodoPageState extends State<TodoPage> {
     showModalBottomSheet(
       context: context,
       // isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                hintText: 'What do you want to do ?',
+      builder: (context) => StatefulBuilder(
+        builder: (context, setBuilderState) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  hintText: 'What do you want to do ?',
+                ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: Text('Select Priority'),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Radio<TodoPriority>(
-                  value: TodoPriority.Low,
-                  groupValue: priority,
-                  onChanged: (value) {
-                    setState(() {
-                      priority = value!;
-                    });
-                  },
-                ),
-                Text(TodoPriority.Low.name),
-                Radio<TodoPriority>(
-                  value: TodoPriority.Normal,
-                  groupValue: priority,
-                  onChanged: (value) {
-                    setState(() {
-                      priority = value!;
-                    });
-                  },
-                ),
-                Text(TodoPriority.Normal.name),
-                Radio<TodoPriority>(
-                  value: TodoPriority.High,
-                  groupValue: priority,
-                  onChanged: (value) {
-                    setState(() {
-                      priority = value!;
-                    });
-                  },
-                ),
-                Text(TodoPriority.High.name),
-              ],
-            )
-          ],
+              const Padding(
+                padding: EdgeInsets.only(top: 25),
+                child: Text('Select Priority'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Radio<TodoPriority>(
+                    value: TodoPriority.Low,
+                    groupValue: priority,
+                    onChanged: (value) {
+                      setBuilderState(() {
+                        priority = value!;
+                      });
+                    },
+                  ),
+                  Text(TodoPriority.Low.name),
+                  Radio<TodoPriority>(
+                    value: TodoPriority.Normal,
+                    groupValue: priority,
+                    onChanged: (value) {
+                      setBuilderState(() {
+                        priority = value!;
+                      });
+                    },
+                  ),
+                  Text(TodoPriority.Normal.name),
+                  Radio<TodoPriority>(
+                    value: TodoPriority.High,
+                    groupValue: priority,
+                    onChanged: (value) {
+                      setBuilderState(() {
+                        priority = value!;
+                      });
+                    },
+                  ),
+                  Text(TodoPriority.High.name),
+                ],
+              ),
+              ElevatedButton(onPressed: _save, child: const Text('Save'))
+            ],
+          ),
         ),
       ),
     );
   }
+
+  void _save() {
+    if (_controller.text.isEmpty) {
+      // print('hi');
+      showMsg(context, 'Input field must not be empty');
+      return;
+    }
+
+    final todo = MyTodo(
+      id: DateTime.now().millisecondsSinceEpoch,
+      name: _controller.text,
+      priority: priority,
+    );
+
+    MyTodo.todos.add(todo);
+    _controller.clear();
+    setState(() {
+      Navigator.pop(context);
+    });
+  }
+}
+
+void showMsg(BuildContext context, String s) {
+  showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: const Text('Cauti on !'),
+            content: Text(s),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              )
+            ],
+          ));
 }
 
 class TodoItem extends StatelessWidget {
